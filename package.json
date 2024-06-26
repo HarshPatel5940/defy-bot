@@ -16,27 +16,24 @@
     "format:check": "prettier --check src/*.ts src/**/*.ts"
   },
   "dependencies": {
-    "discord.js": "^14.14.1",
-    "dotenv": "^16.3.1",
-    "glob": "^10.3.10",
-    "mongodb": "^6.3.0",
-    "zod": "^3.22.4"
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5",
+    "glob": "^10.4.2",
+    "mongodb": "^6.7.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20.10.4",
-    "@typescript-eslint/eslint-plugin": "^5.60.0",
-    "@typescript-eslint/parser": "^5.60.0",
-    "esbuild": "^0.20.0",
-    "eslint": "^8.43.0",
-    "pre-commit": "^1.2.2",
-    "prettier": "^3.1.1",
-    "tsc-watch": "^6.0.4",
-    "typescript": "^5.3.3"
+    "@types/node": "^20.14.9",
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.14.1",
+    "esbuild": "^0.21.5",
+    "eslint": "8.56.0",
+    "prettier": "^3.3.2",
+    "tsc-watch": "^6.2.0",
+    "typescript": "^5.5.2"
   },
   "engines": {
     "node": ">=18.*"
   },
-  "pre-commit": [
-    "format"
-  ]
+  "pre-commit": ["format"]
 }

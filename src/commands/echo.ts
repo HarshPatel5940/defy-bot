@@ -4,11 +4,11 @@ import {
   ModalBuilder,
   PermissionFlagsBits,
   SlashCommandBuilder,
-  SlashCommandChannelOption,
+  type SlashCommandChannelOption,
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import { Command } from "../interface";
+import type { Command } from "../interface";
 
 export default {
   data: new SlashCommandBuilder()
@@ -23,13 +23,17 @@ export default {
         .setRequired(true)
         .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement);
     })
-    .addRoleOption(option =>
-      option.setName("mention").setDescription("Who to mention").setRequired(false),
+    .addRoleOption((option) =>
+      option
+        .setName("mention")
+        .setDescription("Who to mention")
+        .setRequired(false),
     ) as SlashCommandBuilder,
 
   async execute(interaction) {
     if (!interaction.guild) return;
-    const channelId = (interaction.options.getChannel("channel")?.id || interaction.channelId) as string;
+    const channelId = (interaction.options.getChannel("channel")?.id ||
+      interaction.channelId) as string;
     const mention = interaction.options.getRole("mention") || "none";
     const Title = new TextInputBuilder()
       .setCustomId("title")
@@ -42,9 +46,13 @@ export default {
       .setStyle(TextInputStyle.Paragraph)
       .setMaxLength(1900);
 
-    const firstActionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(Title);
-    const secondActionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(Description);
-    const modal = new ModalBuilder().setCustomId(`echo-${channelId}-${mention}`).setTitle("Echo Modal");
+    const firstActionRow =
+      new ActionRowBuilder<TextInputBuilder>().addComponents(Title);
+    const secondActionRow =
+      new ActionRowBuilder<TextInputBuilder>().addComponents(Description);
+    const modal = new ModalBuilder()
+      .setCustomId(`echo-${channelId}-${mention}`)
+      .setTitle("Echo Modal");
     modal.addComponents(firstActionRow, secondActionRow);
     await interaction.showModal(modal);
   },
