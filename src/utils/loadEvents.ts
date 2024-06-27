@@ -56,6 +56,12 @@ export async function loadEvents(
 
     if (data.reward_type === "DEFY_COINS") {
       type = "Defy Coins";
+    } else if (data.reward_type === "RAFFLE_TICKETS") {
+      type = "Raffle Tickets";
+    } else if (data.reward_type === "NFT") {
+      type = "NFT";
+    } else if (data.reward_type === "FREE_SPIN") {
+      type = "Free Spin";
     }
 
     const getCDStamp = (timestamp = Date.now()) =>
