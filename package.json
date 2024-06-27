@@ -20,6 +20,7 @@
     "dotenv": "^16.4.5",
     "glob": "^10.4.2",
     "mongodb": "^6.7.0",
+    "node-cache": "^5.1.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -35,5 +36,7 @@
   "engines": {
     "node": ">=18.*"
   },
-  "pre-commit": ["format"]
+  "pre-commit": [
+    "format"
+  ]
 }

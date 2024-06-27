@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import type { Command } from "../interface";
 import type { DefyUser } from "../types";
-import db from "../utils/database";
+import db, { cacheClient } from "../utils/database";
 
 export default {
   data: new SlashCommandBuilder()
@@ -20,6 +20,7 @@ export default {
         .setRequired(false)
         .addChoices(
           { name: "Top 50", value: "1,50" },
+          { name: "Top 100", value: "1,100" },
           { name: "1 - 20", value: "1,20" },
           { name: "20 - 40", value: "21,40" },
           { name: "40 - 50", value: "41,60" },
@@ -32,77 +33,59 @@ export default {
   async execute(interaction: ChatInputCommandInteraction<CacheType>) {
     if (!interaction.guild) return;
     await interaction.reply("Fetching Leaderboards...");
-    const range = (interaction.options.getString("page") || "1,20").split(",");
-
-    // TODO: we can optimise this when have ability to write to db and mark user
-    // are exsisting... this was we reduce the number of users to fetch repeatedly
-
-    const users = await (
-      await db()
-    )
-      .collection<DefyUser>("users")
-      .find(
-        {
-          "connections.provider": "discord",
-        },
-        {
-          sort: { "balance.totalPointsEarned": -1 },
-          projection: {
-            _id: 0, // To exclude the default MongoDB _id field, set this to 0.
-            "balance.totalPointsEarned": 1,
-            connections: {
-              $filter: {
-                input: "$connections",
-                as: "connection",
-                cond: { $eq: ["$$connection.provider", "discord"] },
-              },
-            },
-          },
-        },
-      )
-      .toArray();
+    const page = interaction.options.getString("page") || "1,20";
+    const range = page.split(",");
+    let users: any = cacheClient.get(page);
 
     const embed = new EmbedBuilder()
-      .setTitle("Leaderboards")
-      .setDescription("Top 50 users with highest total points earned.")
+      .setTitle("Waitlist Leaderboards")
+      .setDescription("Leaderboards for the Defy Community.")
       .setColor(Colors.Green)
       .setTimestamp();
 
-    // Cache using node cache
-    let transformedUsers = users.map((user) => ({
-      id: user.connections[0]?.id as string,
-      points: user.balance.totalPointsEarned,
-    }));
-
-    transformedUsers = transformedUsers.filter((user) => {
-      const member = interaction.guild?.members.cache.get(user.id);
-      return member;
-    });
-
-    console.log(transformedUsers.length);
-
-    const fields = [];
-
-    for (let i = Number(range[0]); i < Number(range[1]); i += 10) {
-      const batch = transformedUsers.slice(i, i + 10);
-      const field = {
-        name: `Rank ${i} - ${i + 10}`,
-        value: batch
-          .map(
-            (user, index) =>
-              `${i + index}. <@${user.id}> - ${user.points} points`,
-          )
-          .join("\n"),
-        inline: false,
-      };
-      fields.push(field);
+    if (!users) {
+      users = await (
+        await db()
+      )
+        .collection<DefyUser>("users")
+        .find(
+          {},
+          {
+            sort: { "balance.totalPointsEarned": -1 },
+            projection: {
+              walletAddress: 1,
+              "balance.totalPointsEarned": 1,
+            },
+          },
+        )
+        .toArray();
+      cacheClient.set(page, users);
+    } else {
+      embed.setFooter({ text: "Data fetched from cache" });
     }
 
-    embed.addFields(fields);
+    let userList = "";
+    const embeds = [embed];
+
+    const diff = range[1] === "50" || range[1] === "100" ? 50 : 20;
+
+    for (let i = Number(range[0]), j = 1; i <= Number(range[1]); i++, j++) {
+      userList += `${i}. Wallet 0x${users[i]?.walletAddress.slice(-5, -1)} - ${users[i]?.balance.totalPointsEarned}\n`;
+
+      if (j % diff === 0) {
+        const emb = new EmbedBuilder()
+          .setDescription(userList)
+          .setColor(Colors.Green);
+        embeds.push(emb);
+
+        userList = "";
+        j = 0;
+      }
+    }
 
     return await interaction.editReply({
       content: "",
-      embeds: [embed],
+      embeds: embeds,
     });
   },
 } as Command;
