@@ -15,7 +15,7 @@ async function initialiseBot() {
   try {
     await loadCommands();
     await loadEvents(client, getCommands());
-    // await registerSlashCommands();
+    await registerSlashCommands(); // TODO: Uncomment later
     await client.login(config.BOT_TOKEN);
   } catch (err) {
     console.log(err);

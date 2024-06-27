@@ -6,16 +6,14 @@ const DefyUserSchema = z.object({
     points: z.number(),
     totalPointsEarned: z.number(),
   }),
-  connections: z
-    .array(
-      z.object({
-        id: z.string(),
-        provider: z.string(),
-        email: z.string().email(),
-        name: z.string(),
-      }),
-    )
-    .optional(),
+  connections: z.array(
+    z.object({
+      id: z.string(),
+      provider: z.string(),
+      email: z.string().email(),
+      name: z.string(),
+    }),
+  ),
 });
 
 export type DefyUser = z.infer<typeof DefyUserSchema>;
