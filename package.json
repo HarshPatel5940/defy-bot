@@ -21,6 +21,7 @@
     "glob": "^10.4.2",
     "mongodb": "^6.7.0",
     "node-cache": "^5.1.2",
+    "socket.io-client": "^4.7.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
