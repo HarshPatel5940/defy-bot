@@ -68,12 +68,11 @@ export default {
       .setColor(Colors.Green)
       .setTimestamp();
 
+    // Cache using node cache
     let transformedUsers = users.map((user) => ({
       id: user.connections[0]?.id as string,
       points: user.balance.totalPointsEarned,
     }));
-    console.log(transformedUsers.length);
-    // Get the top 50 users present in the server
 
     transformedUsers = transformedUsers.filter((user) => {
       const member = interaction.guild?.members.cache.get(user.id);
