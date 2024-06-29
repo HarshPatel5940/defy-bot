@@ -3,6 +3,7 @@ import config from "./config";
 import {
   getCommands,
   loadCommands,
+  loadDefySocket,
   loadEvents,
   registerSlashCommands,
 } from "./utils";
@@ -15,7 +16,8 @@ async function initialiseBot() {
   try {
     await loadCommands();
     await loadEvents(client, getCommands());
-    // await registerSlashCommands(); // TODO: Uncomment later
+    await loadDefySocket();
+    await registerSlashCommands();
     await client.login(config.BOT_TOKEN);
   } catch (err) {
     console.log(err);
